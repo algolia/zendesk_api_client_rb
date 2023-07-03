@@ -1,3 +1,5 @@
+require 'faraday/follow_redirects'
+
 require 'zendesk_api/version'
 require 'zendesk_api/sideloading'
 require 'zendesk_api/configuration'
@@ -151,6 +153,7 @@ module ZendeskAPI
         builder.use ZendeskAPI::Middleware::Response::ParseIsoDates
         builder.use ZendeskAPI::Middleware::Response::ParseJson
         builder.use ZendeskAPI::Middleware::Response::SanitizeResponse
+        builder.response :follow_redirects
         adapter = config.adapter || Faraday.default_adapter
 
         unless GZIP_EXCEPTIONS.include?(adapter)

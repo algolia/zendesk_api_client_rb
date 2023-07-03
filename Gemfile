@@ -1,5 +1,8 @@
 source 'https://rubygems.org'
 
+# Reason of this fork: follow redirects
+gem 'faraday-follow_redirects'
+
 gem "jruby-openssl", platforms: :jruby
 gem "mini_mime"
 gem "rake"

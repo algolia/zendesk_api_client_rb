@@ -2,9 +2,9 @@ doc/**
 spec/examples.txt
 spec/fixtures/cassettes
 spec/fixtures/credentials.yml
+Gemfile.lock
 coverage/**
 .yardoc/**
-Gemfile.lock
 .ruby-version
 vendor/bundle/**
 pkg/**
