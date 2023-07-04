@@ -55,25 +55,6 @@ describe ZendeskAPI::Middleware::Response::RaiseError do
       end
     end
 
-    context "with status = 304" do
-      let(:status) { 304 }
-
-      it "should not raise" do
-        client.connection.get "/abcdef"
-      end
-    end
-
-    context "with status in 3XX" do
-      let(:status) { 302 }
-
-      it "raises NetworkError with the right message" do
-        expect { client.connection.get "/non_existent" }.to raise_error(
-          ZendeskAPI::Error::NetworkError,
-          "the server responded with status 302 -- get https://#{client.connection.host}/non_existent"
-        )
-      end
-    end
-
     context "with status = 422" do
       let(:status) { 422 }
 

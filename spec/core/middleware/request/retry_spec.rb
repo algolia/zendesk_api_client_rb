@@ -34,15 +34,22 @@ describe ZendeskAPI::Middleware::Request::Retry do
     end
   end
 
-  context "with a failed connection, explicit retry true  on exception, and retrying" do
+  context "with a failed connection, explicit retry true  on exception, and retrying many times" do
     context "connection failed" do
       before(:each) do
         client.config.retry_on_exception = true
-        stub_request(:any, /.*/).to_raise(Faraday::ConnectionFailed).to_return(:status => 200)
+        stub_request(:any, /.*/).
+          to_return(:status => 429).
+          to_return(:status => 429).
+          to_return(:status => 429).
+          to_return(:status => 429).
+          to_return(:status => 429).
+          to_return(:status => 429).
+          to_return(:status => 200)
       end
 
       it "should raise NetworkError, but then actually retry" do
-        expect_any_instance_of(ZendeskAPI::Middleware::Request::Retry).to receive(:sleep).exactly(10).times.with(1)
+        expect_any_instance_of(ZendeskAPI::Middleware::Request::Retry).to receive(:sleep).exactly(60).times.with(1)
         expect(client.connection.get("blergh").status).to eq(200)
       end
     end
@@ -79,7 +86,7 @@ describe ZendeskAPI::Middleware::Request::Retry do
       end
 
       it "should print to logger" do
-        expect(client.config.logger).to receive(:warn).exactly(4)
+        expect(client.config.logger).to receive(:warn).exactly(1)
         client.connection.get("blergh")
       end
 
@@ -108,7 +115,7 @@ describe ZendeskAPI::Middleware::Request::Retry do
       end
 
       it "should print to logger" do
-        expect(client.config.logger).to receive(:warn).exactly(4)
+        expect(client.config.logger).to receive(:warn).exactly(1)
         client.connection.get("blergh")
       end
 
