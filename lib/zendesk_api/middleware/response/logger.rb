@@ -18,9 +18,7 @@ module ZendeskAPI
         def call(env)
           @app.call(env).on_complete do |env|
             unless (400..499).cover?(env[:status].to_i)
-              info = "#{env[:method]} [#{env[:status]}] #{env[:url].to_s} #{env[:body].to_s[0, LOG_LENGTH]}"
-
-              @logger.info info
+              @logger.info "#{env[:method]} [#{env[:status]}] #{env[:url].to_s} #{env[:body].to_s[0, LOG_LENGTH]}"
             end
           end
         end
