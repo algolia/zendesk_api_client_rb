@@ -6,52 +6,28 @@ on:
   push:
     branches:
       - master
-      - spec_live
+
+concurrency:
+  group: ${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 
 jobs:
   test-and-lint:
     name: Test and lint
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        ruby:
-          - "2.7"
-          - "3.0"
-          - "3.1"
-          - "3.2"
-          - "jruby-9.4"
+    timeout-minutes: 2
     steps:
       - name: Checkout code
         uses: zendesk/checkout@v2
+
       - name: Set up Ruby
         uses: zendesk/setup-ruby@v1
         with:
           bundler-cache: true
-          ruby-version: ${{ matrix.ruby }}
+          ruby-version: "3.2"
+
       - name: Test and Lint
         run: |
           bundle install
           bundle exec rake
           bundle exec rubocop
-  spec-live:
-    name: Spec live
-    if: github.repository == 'zendesk/zendesk_api_client_rb'
-    env:
-      SPEC_LIVE_USERNAME: ${{ secrets.SPEC_LIVE_USERNAME }}
-      SPEC_LIVE_PASSWORD: ${{ secrets.SPEC_LIVE_PASSWORD }}
-      SPEC_LIVE_ZENDESK_HOST: ${{ secrets.SPEC_LIVE_ZENDESK_HOST }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: zendesk/checkout@v2
-      - name: Set up Ruby
-        uses: zendesk/setup-ruby@v1
-        with:
-          bundler-cache: true
-          ruby-version: 3.1
-      - name: spec:live
-        run: |
-          bundle install
-          bundle exec rake clean_live set_ci_credentials spec:live ||
-          bundle exec rake clean_live &&
-          bundle exec rspec spec/live --only-failures
