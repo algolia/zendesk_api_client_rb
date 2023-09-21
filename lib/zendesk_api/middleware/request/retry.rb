@@ -44,10 +44,10 @@ module ZendeskAPI
           rescue => e
             if e.response && @error_codes.include?(e.response.env[:status])
               seconds_left = (e.response.env[:response_headers][:retry_after] || DEFAULT_RETRY_AFTER).to_i
-              @logger.warn "\t[retry #{retries}/#{DEFAULT_MAX_RETRIES}] You have been rate limited. Retrying in #{seconds_left} seconds..." if @logger
+              @logger.warn "\t[retry #{retries}/#{DEFAULT_MAX_RETRIES}] You have been rate limited. Retrying #{env[:url].to_s} in #{seconds_left} seconds..." if @logger
             else
               seconds_left = DEFAULT_RETRY_AFTER.to_i
-              @logger.warn "\t[retry #{retries}/#{DEFAULT_MAX_RETRIES}] An exception happened, waiting #{seconds_left} seconds... #{e}" if @logger
+              @logger.warn "\t[retry #{retries}/#{DEFAULT_MAX_RETRIES}] An exception happened on #{env[:url].to_s}, waiting #{seconds_left} seconds... #{e}" if @logger
             end
 
             rewind_files(body)
