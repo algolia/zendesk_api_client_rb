@@ -11,6 +11,7 @@ jobs:
   test-and-lint:
     name: Test and lint
     runs-on: ubuntu-latest
+    timeout-minutes: 2
     steps:
       - name: Checkout code
         uses: zendesk/checkout@v2
